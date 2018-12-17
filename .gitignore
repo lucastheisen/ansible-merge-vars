@@ -1,0 +1,7 @@
+# Editor artifacts
+*~
+.*.swp
+debug.test
+
+# python
+.pyc

@@ -1,0 +1,31 @@
+---
+all:
+  hosts:
+    bar-dev:
+    bar-qa:
+    foo-dev:
+    foo-qa:
+  children:
+    bar:
+      hosts:
+        bar-dev:
+        bar-qa:
+    dev:
+      hosts:
+        bar-dev:
+        foo-dev:
+    foo:
+      hosts:
+        foo-dev:
+        foo-qa:
+    k8s_namespaces:
+      hosts:
+        bar-dev:
+        bar-qa:
+        foo-dev:
+        foo-qa:
+    qa:
+      hosts:
+        bar-qa:
+        foo-qa:
+

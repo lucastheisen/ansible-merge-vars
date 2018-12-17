@@ -1,0 +1,7 @@
+---
+ansible_connection: local
+
+k8s:
+  cluster: "{{ k8s_cluster }}"
+  namespace: "{{ config_project }}-{{ config_environment }}"
+  verify_ssl: "{{ k8s_verify_ssl }}"

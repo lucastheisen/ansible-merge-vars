@@ -1,0 +1,17 @@
+---
+- hosts: foo-dev
+
+  tasks:
+
+  - name: Lets see what happens here
+    merge_vars:
+      from:
+      - "./vars/{{ config_project }}"
+      - "./vars/{{ config_environment }}"
+      - "./vars/{{ config_project }}-{{ config_environment }}"
+
+  - name: All vars
+    debug:
+      var: "{{ item }}"
+    loop:
+    - db
