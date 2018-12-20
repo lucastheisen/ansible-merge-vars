@@ -125,15 +125,15 @@ ok: [foo-dev] => (item=k8s) => {
 
 1. Per [this conversation](https://meetbot.fedoraproject.org/ansible-meeting/2018-12-20/ansible_core_irc_meeting.2018-12-20-15.07.log.html) during an ansible-meeting, you could use the `hash_behavior: merge` configuration option.  The downside to this would be that:
 
-  * This setting applies globally which means:
-    * The modules/plays/roles are not portable (other consumers would have to also have that global setting)
-  * This setting is ignored by `include_vars` when using `dir` feature ([_15:48:05 <bcoca> there is one thing in i.nclude_vars that does NOT follow this and that is the 'directory' feature, buyt that is internal to the plubing_](https://meetbot.fedoraproject.org/ansible-meeting/2018-12-20/ansible_core_irc_meeting.2018-12-20-15.07.log.html))
-    * This could be resolved by using inline vault vars and a single vars file (instead of the `sensitive_var: {{ vault_sensitive_var }}` idiom suggested by the [_Best Practices documentation_](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#variables-and-vaults)).
-      * _The single vars file would not allow the _DRY_ approach of `foo`, `dev`, and `foo-dev` variables_
-      * _Inline vars are more difficult to edit, you have to `ansible-vault encrypt` then copy/paste_
-      * _Inline vars add giant blobs of incomprehensible text to what is otherwise a human readable configuration file_
+   * This setting applies globally which means:
+     * The modules/plays/roles are not portable (other consumers would have to also have that global setting)
+   * This setting is ignored by `include_vars` when using `dir` feature ([_15:48:05 <bcoca> there is one thing in i.nclude_vars that does NOT follow this and that is the 'directory' feature, buyt that is internal to the plubing_](https://meetbot.fedoraproject.org/ansible-meeting/2018-12-20/ansible_core_irc_meeting.2018-12-20-15.07.log.html))
+     * This could be resolved by using inline vault vars and a single vars file (instead of the `sensitive_var: {{ vault_sensitive_var }}` idiom suggested by the [_Best Practices documentation_](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#variables-and-vaults)).
+       * _The single vars file would not allow the _DRY_ approach of `foo`, `dev`, and `foo-dev` variables_
+       * _Inline vars are more difficult to edit, you have to `ansible-vault encrypt` then copy/paste_
+       * _Inline vars add giant blobs of incomprehensible text to what is otherwise a human readable configuration file_
 
 2. Add a `merge: yes` option to `include_vars` itself to scope the merge at a single task rather than the entire project via `hash_behavior: merge`
 
 3. Add this plugin as a peer of `include_vars` to the ansible core where it could be _trusted_ in the same fashion as `include_vars`
-  * This would be simple enough to do as it is a very simple plugin.  It just requires buy in from ansible core.
+   * This would be simple enough to do as it is a very simple plugin.  It just requires buy in from ansible core.
