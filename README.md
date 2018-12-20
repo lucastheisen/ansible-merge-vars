@@ -134,6 +134,7 @@ ok: [foo-dev] => (item=k8s) => {
        * _Inline vars add giant blobs of incomprehensible text to what is otherwise a human readable configuration file_
 
 2. Add a `merge: yes` option to `include_vars` itself to scope the merge at a single task rather than the entire project via `hash_behavior: merge`
+   * Would this work with the `dirs` feature, or not for the same reason `dirs` doesn't work with `hash_behavior: merge`?
 
 3. Add this plugin as a peer of `include_vars` to the ansible core where it could be _trusted_ in the same fashion as `include_vars`
    * This would be simple enough to do as it is a very simple plugin.  It just requires buy in from ansible core.
