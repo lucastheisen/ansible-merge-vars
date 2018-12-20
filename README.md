@@ -37,7 +37,7 @@ all:
         foo-dev:
       vars:
         app_environment: dev
-        k8s_cluster: docker-for-desktop-cluster
+        k8s_cluster: dev-cluster.pastdev.com
         k8s_verify_ssl: False
     foo:
       hosts:
@@ -63,8 +63,8 @@ all:
         foo-qa:
       vars:
         app_environment: qa
-        k8s_cluster: docker-for-desktop-cluster
-        k8s_verify_ssl: False
+        k8s_cluster: qa-cluster.pastdev.com
+        k8s_verify_ssl: true
 ```
 
 ## Alternatives
