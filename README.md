@@ -67,6 +67,60 @@ all:
         k8s_verify_ssl: true
 ```
 
+And app vars:
+
+_vars/app/foo/vars.yml_
+```
+app:
+  db:
+    hostname: foo_db
+```
+
+_vars/app/dev/vars.yml_
+```
+app:
+  debug: true
+```
+
+_vars/app/foo-dev/vars.yml_
+```
+app:
+  db:
+    username: "{{ vault_app.db.username }}"
+    password: "{{ vault_app.db.password }}"
+```
+
+_vars/app/foo-dev/vault.yml_
+```
+vault_app:
+  db:
+    username: foo_username
+    password: foo_password
+```
+
+Would result in:
+```
+ok: [foo-dev] => (item=app) => {
+    "app": {
+        "db": {
+            "hostname": "foo_db",
+            "password": "foo_password",
+            "username": "foo_username"
+        },
+        "debug": true
+    },
+    "item": "app"
+}
+ok: [foo-dev] => (item=k8s) => {
+    "item": "k8s",
+    "k8s": {
+        "cluster": "dev-cluster.pastdev.com",
+        "namespace": "foo-dev",
+        "verify_ssl": false
+    }
+}
+```
+
 ## Alternatives
 
 Per [this conversation](https://meetbot.fedoraproject.org/ansible-meeting/2018-12-20/ansible_core_irc_meeting.2018-12-20-15.07.log.html) during an ansible-meeting, you could use the `hash_behavior: merge` configuration option.  The downside to this would be that:
