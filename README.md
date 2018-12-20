@@ -1,8 +1,8 @@
 # Ansible `merge_vars` Action Plugin
 
-This plugin is similar to `include_vars`, but designed to merge all files provided via `from` rather than replacing.
+This plugin is similar to `include_vars`, but designed to merge all the variables in the files specified by `from` rather than replacing.
 
-_Note, this implimentation is not necessarily safe as it has to pretend to be `include_vars` to get interpolation when the facts are set._
+_Note, this implimentation is not necessarily safe as it has to [pretend to be `include_vars`](https://github.com/lucastheisen/ansible-merge-vars/blob/master/lib/plugins/action/merge_vars.py#L23) to get interpolation when the facts are set._
 
 ## Background
 
