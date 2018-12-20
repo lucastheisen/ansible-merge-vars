@@ -1,3 +1,0 @@
----
-stupid:
-  user: "{{ansible_user}}"

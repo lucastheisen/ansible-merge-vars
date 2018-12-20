@@ -1,9 +1,9 @@
 ---
-- hosts: foo-dev
+- hosts: bar-qa
 
   tasks:
 
-  - name: Merge in application configuration
+  - name: Merge in application config
     merge_vars:
       from:
       - "./vars/app/{{ app_project }}"

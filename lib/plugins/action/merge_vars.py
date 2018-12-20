@@ -19,6 +19,7 @@ class ActionModule(ActionBase):
             if not arg in self.VALID_ARGUMENTS:
                 raise AnsibleError('%s is not a valid option in merge_vars' % arg)
 
+        self.show_content = True;
         self._task.action = 'include_vars';
 
         failed = False
@@ -34,9 +35,10 @@ class ActionModule(ActionBase):
             else:
                 failed = True
                 err_msg = to_native('%s does not exist' % source)
+                break
 
+        data = {}
         if not failed:
-            data = {}
             for filename in files:
                 try:
                     data = merge_hash(data, self._load_from_file(filename))
@@ -54,20 +56,16 @@ class ActionModule(ActionBase):
         result['ansible_included_var_files'] = files
         result['ansible_facts'] = data
         result['_ansible_no_log'] = not self.show_content
-
-        print("\n\nWTF %s\n\n" % result)
         
         return result
 
-    def _load_from_file_passthru(self, filename):
-        return self._loader.load_from_file(filename)
-
-    # matches include vars even though it is identical to the implementation of self._loader.load_from_file
     def _load_from_file(self, filename):
+        # this is the approach used by include_vars in order to get the show_content
+        # value based on whether decryption occured.  load_from_file does not return
+        # that value. 
+        #    https://github.com/ansible/ansible/blob/v2.7.5/lib/ansible/plugins/action/include_vars.py#L236-L240
         b_data, show_content = self._loader._get_file_contents(filename)
         data = to_text(b_data, errors='surrogate_or_strict')
 
         self.show_content = show_content
-        return self._loader.load(data, file_name=filename, show_content=show_content)
-
-
+        return self._loader.load(data, file_name=filename, show_content=show_content) or {}

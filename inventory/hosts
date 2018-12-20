@@ -10,22 +10,39 @@ all:
       hosts:
         bar-dev:
         bar-qa:
+      vars:
+        app_project: bar
     dev:
       hosts:
         bar-dev:
         foo-dev:
+      vars:
+        app_environment: dev
+        k8s_cluster: docker-for-desktop-cluster
+        k8s_verify_ssl: False
     foo:
       hosts:
         foo-dev:
         foo-qa:
+      vars:
+        app_project: foo
     k8s_namespaces:
       hosts:
         bar-dev:
         bar-qa:
         foo-dev:
         foo-qa:
+      vars:
+        ansible_connection: local
+        k8s:
+          cluster: "{{ k8s_cluster }}"
+          namespace: "{{ app_project }}-{{ app_environment }}"
+          verify_ssl: "{{ k8s_verify_ssl }}"
     qa:
       hosts:
         bar-qa:
         foo-qa:
-
+      vars:
+        app_environment: qa
+        k8s_cluster: docker-for-desktop-cluster
+        k8s_verify_ssl: False

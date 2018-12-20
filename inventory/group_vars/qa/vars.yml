@@ -1,6 +1,0 @@
----
-config_environment: qa
-
-k8s_cluster: docker-for-desktop-cluster
-k8s_verify_ssl: False
-

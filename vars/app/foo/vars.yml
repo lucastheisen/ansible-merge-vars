@@ -1,0 +1,4 @@
+---
+app:
+  db:
+    hostname: foo_db
