@@ -1,0 +1,21 @@
+---
+- hosts: foo-dev
+
+  tasks:
+
+  - name: Merge in application configuration
+    include_vars:
+      dir: "{{ item }}"
+      hash_behaviour: merge
+    loop:
+    - "./vars/app/{{ app_project }}"
+    - "./vars/app/{{ app_environment }}"
+    - "./vars/app/{{ app_project }}-{{ app_environment }}"
+
+  - name: Application configuration
+    debug:
+      var: "{{ item }}"
+    loop:
+    - app
+    - k8s
+
