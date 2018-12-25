@@ -133,8 +133,9 @@ ok: [foo-dev] => (item=k8s) => {
        * _Inline vars are more difficult to edit, you have to `ansible-vault encrypt` then copy/paste_
        * _Inline vars add giant blobs of incomprehensible text to what is otherwise a human readable configuration file_
 
-2. Add a `merge: yes` option to `include_vars` itself to scope the merge at a single task rather than the entire project via `hash_behavior: merge`
-   * Would this work with the `dirs` feature, or not for the same reason `dirs` doesn't work with `hash_behavior: merge`?
+2. Add a `hash_behaviour: merge` option to `include_vars` itself to scope the merge at a single task rather than the entire project via `hash_behavior: merge`
+   * Would this work with the `dirs` feature, or not for the same reason `dirs` doesn't work with `hash_behavior: merge`? (In testing, it appears to)
+   * The merege can take place in `include_vars.py` (as in the following example), or could be pushed up into the executor where it could be shared by `set_fact`.
    ```
    ltheisen@ltp52s:~/git/pastdev-ansible$ diff -u ../ansible/lib/ansible/modules/utilities/logic/include_vars.py lib/modules/utilities/logic/include_vars.py
    --- ../ansible/lib/ansible/modules/utilities/logic/include_vars.py      2018-12-16 15:10:23.054969700 -0500
