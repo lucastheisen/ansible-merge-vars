@@ -135,6 +135,79 @@ ok: [foo-dev] => (item=k8s) => {
 
 2. Add a `merge: yes` option to `include_vars` itself to scope the merge at a single task rather than the entire project via `hash_behavior: merge`
    * Would this work with the `dirs` feature, or not for the same reason `dirs` doesn't work with `hash_behavior: merge`?
+   ```
+   ltheisen@ltp52s:~/git/pastdev-ansible$ diff -u ../ansible/lib/ansible/modules/utilities/logic/include_vars.py lib/modules/utilities/logic/include_vars.py
+   --- ../ansible/lib/ansible/modules/utilities/logic/include_vars.py      2018-12-16 15:10:23.054969700 -0500
+   +++ lib/modules/utilities/logic/include_vars.py 2018-12-25 13:20:37.319859200 -0500
+   @@ -39,6 +39,10 @@
+        version_added: "2.2"
+        description:
+          - The name of a variable into which assign the included vars. If omitted (null) they will be made top level vars.
+   +  hash_behaviour:
+   +    version_added: "2.8"
+   +    description:
+   +      - Either 'replace' or 'merge', determines the behavior when var already exists.
+      depth:
+        version_added: "2.2"
+        description:
+   ```
+   ```
+   ltheisen@ltp52s:~/git/pastdev-ansible$ diff -u ../ansible/lib/ansible/plugins/action/include_vars.py lib/plugins/action/include_vars.py
+   --- ../ansible/lib/ansible/plugins/action/include_vars.py       2018-12-16 15:10:25.148728700 -0500
+   +++ lib/plugins/action/include_vars.py  2018-12-24 16:27:49.483592500 -0500
+   @@ -25,6 +25,7 @@
+    from ansible.module_utils.six import string_types
+    from ansible.module_utils._text import to_native, to_text
+    from ansible.plugins.action import ActionBase
+   +from ansible.utils.vars import merge_hash
+   
+   
+    class ActionModule(ActionBase):
+   @@ -34,7 +35,7 @@
+        VALID_FILE_EXTENSIONS = ['yaml', 'yml', 'json']
+        VALID_DIR_ARGUMENTS = ['dir', 'depth', 'files_matching', 'ignore_files', 'extensions', 'ignore_unknown_extensions']
+        VALID_FILE_ARGUMENTS = ['file', '_raw_params']
+   -    VALID_ALL = ['name']
+   +    VALID_ALL = ['name', 'hash_behaviour']
+   
+        def _set_dir_defaults(self):
+            if not self.depth:
+   @@ -72,6 +73,8 @@
+            self.ignore_files = self._task.args.get('ignore_files', None)
+            self.valid_extensions = self._task.args.get('extensions', self.VALID_FILE_EXTENSIONS)
+   
+   +        self.hash_behaviour = self._task.args.get('hash_behaviour', 'replace')
+   +
+            # convert/validate extensions list
+            if isinstance(self.valid_extensions, string_types):
+                self.valid_extensions = list(self.valid_extensions)
+   @@ -148,12 +151,25 @@
+                result['failed'] = failed
+                result['message'] = err_msg
+   
+   +        result['ansible_facts_hash_behaviour'] = self.hash_behaviour
+   +        if (self.hash_behaviour == 'merge'):
+   +            results = self._merge_here_rather_than_task_executor_cause_i_dont_wanna_modify_core(task_vars, results)
+   +
+            result['ansible_included_var_files'] = self.included_files
+            result['ansible_facts'] = results
+            result['_ansible_no_log'] = not self.show_content
+   
+            return result
+   
+   +    def _merge_here_rather_than_task_executor_cause_i_dont_wanna_modify_core(self, task_vars, results):
+   +        data = {}
+   +
+   +        for key in results:
+   +            if key in task_vars:
+   +                data[key] = task_vars[key]
+   +
+   +        return merge_hash(data, results)
+   +
+        def _set_root_dir(self):
+            if self._task._role:
+                if self.source_dir.split('/')[0] == 'vars':
+   ```
 
 3. Add this plugin as a peer of `include_vars` to the ansible core where it could be _trusted_ in the same fashion as `include_vars`
    * This would be simple enough to do as it is a very simple plugin.  It just requires buy in from ansible core.
