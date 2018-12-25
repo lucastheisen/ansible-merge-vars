@@ -40,9 +40,9 @@ options:
     description:
       - The name of a variable into which assign the included vars. If omitted (null) they will be made top level vars.
   hash_behaviour:
-    version_added: "2.7"
+    version_added: "2.8"
     description:
-      - Either 'replace' or 'merge'
+      - Either 'replace' or 'merge', determines the behavior when var already exists.
   depth:
     version_added: "2.2"
     description:
